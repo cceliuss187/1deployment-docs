@@ -1,0 +1,71 @@
+----------------AWS Instance Creation---------------
+created ubuntu EC2 instance
+created key pair
+download key pair
+
+----set up security groups----
+
+Port range   Protocol   Source
+22	     TCP	0.0.0.0/0	
+80	     TCP	0.0.0.0/0	
+8080	     TCP	0.0.0.0/0
+
+
+-------Log into the EC2 from terminal------------
+log into EC2 using key pair
+
+----------INSTALL JENKINS-----------------
+install jenkins on EC2
+run the following commands:
+
+sudo apt update && sudo apt install default-jre
+wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key |sudo gpg --dearmor -o /usr/share/keyrings/jenkins.gpg
+sudo sh -c 'echo deb [signed-by=/usr/share/keyrings/jenkins.gpg] http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt update && sudo apt install jenkins -y
+
+--------START JENKINS----------
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+
+-------INSTALL PYTHON 3 AND VIRTUAL ENVIRONMENT-------
+sudo apt install python3-pip
+sudo apt install python3.10-venv
+
+-----CONNECT GITHUB TO JENKINS-------
+fork the deployment repo
+create a personal access token from github
+under "Select scopes" section 
+check the "repo" and "admin:repo_hook" boxes
+then generate the token
+
+-----CREATE A MULTIBRANCH BUILD-------
+log into jenkins via port 8080
+<Public IPv4 DNS or Public IPv4 address>:8080 (paste in browser)
+create a username and password
+navigate to Dashboard
+select new item
+enter a display name and brief description 
+select "multibranch pipeline"
+add a branch source by selecting "add source" and select "github" in the dropdown menu
+click on add and select "jenkins"
+under the username section...enter your github username
+under the password section...enter your token
+click add
+
+under the "Repository HTTPS URL" section.... enter the url of your repository then click validate
+click apply then save below
+then click "build now" (the application should start to build)
+
+
+------DOWNLOAD APPLICATION FILES FROM GITHUB AND DEPLOY TO ELASTIC BEANSTALK-----
+go to the forked repo on github and download the zipped version of the application
+go to AWS Elastic Beanstalk and create a new environment
+Application name: url-shortner
+Environment name: Urlshortner-env
+Platform: Python
+Platform: branch: 3.8
+Platform version: 3.3.16
+Application code: Upload your code, local file (upload zipped file)
+then click "Create environment"
+
+once the environment is done creating, select the url AWS provides on your application health page. 
